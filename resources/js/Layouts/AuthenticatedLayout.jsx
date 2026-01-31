@@ -49,6 +49,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                 {/* Principal Links */}
                                 {user.role === 'admin' && user.school_id && (
                                     <>
+                                        <NavLink href={route('principal.applications.index')} active={route().current('principal.applications.*')}>
+                                            Applications
+                                        </NavLink>
                                         <NavLink href={route('principal.teachers.index')} active={route().current('principal.teachers.*')}>
                                             Teachers
                                         </NavLink>
@@ -66,6 +69,18 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <>
                                         <NavLink href={route('teacher.dashboard')} active={route().current('teacher.dashboard')}>
                                             My Classes
+                                        </NavLink>
+                                    </>
+                                )}
+
+                                {/* Student Links */}
+                                {user.role === 'student' && (
+                                    <>
+                                        <NavLink href={route('student.attendance')} active={route().current('student.attendance')}>
+                                            My Attendance
+                                        </NavLink>
+                                        <NavLink href={route('student.grades')} active={route().current('student.grades')}>
+                                            My Grades
                                         </NavLink>
                                     </>
                                 )}
@@ -178,6 +193,17 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+
+                        {user.role === 'student' && (
+                            <>
+                                <ResponsiveNavLink href={route('student.attendance')} active={route().current('student.attendance')}>
+                                    My Attendance
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink href={route('student.grades')} active={route().current('student.grades')}>
+                                    My Grades
+                                </ResponsiveNavLink>
+                            </>
+                        )}
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">

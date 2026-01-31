@@ -1,6 +1,6 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 export default function Dashboard({ auth, student, school, class: schoolClass, notices }) {
     return (
@@ -36,7 +36,10 @@ export default function Dashboard({ auth, student, school, class: schoolClass, n
                         {/* Status Cards */}
                         <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-8 self-start">
                             {/* Report Cards Card */}
-                            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer">
+                            <Link
+                                href={route('student.grades')}
+                                className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer"
+                            >
                                 <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -45,10 +48,13 @@ export default function Dashboard({ auth, student, school, class: schoolClass, n
                                 <h3 className="text-xl font-black text-gray-900 mb-2">My Results</h3>
                                 <p className="text-gray-500 text-sm mb-4">View and download your termly report cards and subject grades.</p>
                                 <span className="text-emerald-600 font-bold text-sm">View Report Cards &rarr;</span>
-                            </div>
+                            </Link>
 
                             {/* Attendance Card */}
-                            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer">
+                            <Link
+                                href={route('student.attendance')}
+                                className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer"
+                            >
                                 <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
                                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -57,10 +63,13 @@ export default function Dashboard({ auth, student, school, class: schoolClass, n
                                 <h3 className="text-xl font-black text-gray-900 mb-2">Attendance</h3>
                                 <p className="text-gray-500 text-sm mb-4">Track your daily class attendance and participation records.</p>
                                 <span className="text-blue-600 font-bold text-sm">Check History &rarr;</span>
-                            </div>
+                            </Link>
 
                             {/* Profile Card */}
-                            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer">
+                            <Link
+                                href={route('profile.edit')}
+                                className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer"
+                            >
                                 <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -69,7 +78,7 @@ export default function Dashboard({ auth, student, school, class: schoolClass, n
                                 <h3 className="text-xl font-black text-gray-900 mb-2">My Profile</h3>
                                 <p className="text-gray-500 text-sm mb-4">Update your personal information and change your password.</p>
                                 <span className="text-indigo-600 font-bold text-sm">Edit Profile &rarr;</span>
-                            </div>
+                            </Link>
                         </div>
 
                         {/* Recent Notices */}

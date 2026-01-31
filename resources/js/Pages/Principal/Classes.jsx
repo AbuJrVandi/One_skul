@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, Link } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';

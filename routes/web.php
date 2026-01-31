@@ -16,6 +16,18 @@ Route::get('/', [PublicController::class, 'home'])->name('home');
 Route::get('/districts/{district}', [PublicController::class, 'district'])->name('public.district');
 Route::get('/schools/{school}', [PublicController::class, 'school'])->name('public.school');
 
+// Application Flow
+use App\Http\Controllers\ApplicationController;
+use App\Modules\Attendance\Controllers\AttendanceController;
+use App\Modules\Grades\Controllers\GradeController;
+use App\Modules\Attendance\Controllers\StudentAttendanceController;
+use App\Modules\Grades\Controllers\StudentGradesController;
+
+Route::get('/apply/schools', [ApplicationController::class, 'discovery'])->name('apply.discovery');
+Route::get('/apply/schools/{school}', [ApplicationController::class, 'showForm'])->name('apply.form');
+Route::post('/apply/schools/{school}', [ApplicationController::class, 'submit'])->name('apply.submit');
+Route::get('/apply/success/{application}', [ApplicationController::class, 'success'])->name('apply.success');
+
 // School-Based Auth Flow
 Route::get('/schools/{school}/access', [\App\Http\Controllers\SchoolAuthController::class, 'selectRole'])->name('school.roles');
 Route::get('/schools/{school}/login/{role}', [\App\Http\Controllers\SchoolAuthController::class, 'showLogin'])->name('school.login');
@@ -67,6 +79,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsSuperAdmin::class])-
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsPrincipal::class])->prefix('school-admin')->name('principal.')->group(function () {
     Route::get('/dashboard', [PrincipalController::class, 'dashboard'])->name('dashboard');
     
+    // Application Management
+    Route::get('/applications', [PrincipalController::class, 'applications'])->name('applications.index');
+    Route::get('/applications/{application}', [PrincipalController::class, 'showApplication'])->name('applications.show');
+    Route::post('/applications/{application}/approve', [PrincipalController::class, 'approveApplication'])->name('applications.approve');
+    Route::post('/applications/{application}/reject', [PrincipalController::class, 'rejectApplication'])->name('applications.reject');
+    
     Route::get('/teachers', [PrincipalController::class, 'teachers'])->name('teachers.index');
     Route::post('/teachers', [PrincipalController::class, 'storeTeacher'])->name('teachers.store');
     Route::patch('/teachers/{teacher}', [PrincipalController::class, 'updateTeacher'])->name('teachers.update');
@@ -88,11 +106,21 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsTeacher::class])->pr
     Route::get('/dashboard', [TeacherController::class, 'dashboard'])->name('dashboard');
     Route::get('/class/{schoolClass}', [TeacherController::class, 'classView'])->name('class.view');
     Route::post('/students', [TeacherController::class, 'storeStudent'])->name('students.store');
+    
+    // Attendance Module
+    Route::get('/class/{schoolClass}/attendance', [AttendanceController::class, 'index'])->name('class.attendance.index');
+    Route::post('/class/{schoolClass}/attendance', [AttendanceController::class, 'store'])->name('class.attendance.store');
+
+    // Grades Module
+    Route::get('/class/{schoolClass}/grades', [GradeController::class, 'index'])->name('class.grades.index');
+    Route::post('/class/{schoolClass}/grades', [GradeController::class, 'store'])->name('class.grades.store');
 });
 
 // Student Routes
 Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+    Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance');
+    Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades');
 });
 
 require __DIR__.'/auth.php';

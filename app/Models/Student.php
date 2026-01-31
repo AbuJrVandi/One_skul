@@ -15,7 +15,12 @@ class Student extends Model
         'index_number', 
         'date_of_birth', 
         'gender', 
-        'grade_level'
+        'grade_level',
+        'address',
+        'emergency_contact',
+        'user_id',
+        'photo_path',
+        'school_class_id',
     ];
 
     public function school(): BelongsTo

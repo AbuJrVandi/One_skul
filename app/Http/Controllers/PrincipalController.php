@@ -9,6 +9,8 @@ use App\Models\Student;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Application;
+use App\Services\ApplicationService;
 
 class PrincipalController extends Controller
 {
@@ -227,5 +229,70 @@ class PrincipalController extends Controller
             'students' => $students,
             'classes' => $classes
         ]);
+    }
+
+    // --- Application Management ---
+    public function applications()
+    {
+        $school = $this->getSchool();
+        $applications = Application::where('school_id', $school->id)
+            ->latest()
+            ->get();
+            
+        return Inertia::render('Principal/Applications/Index', [
+            'applications' => $applications
+        ]);
+    }
+
+    public function showApplication(Application $application)
+    {
+        $school = $this->getSchool();
+        if ($application->school_id !== $school->id) {
+            abort(403);
+        }
+        
+        return Inertia::render('Principal/Applications/Show', [
+            'application' => $application
+        ]);
+    }
+
+    public function approveApplication(Application $application, ApplicationService $service)
+    {
+        $school = $this->getSchool();
+        if ($application->school_id !== $school->id) {
+            abort(403);
+        }
+        
+        if ($application->status !== 'pending') {
+             return redirect()->back()->with('error', 'Application already processed.');
+        }
+        
+        try {
+            $result = $service->approveApplication($application, auth()->user());
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error approving application: ' . $e->getMessage());
+        }
+        
+        return redirect()->back()->with('success', 'Application approved. Student account created with password: ' . $result['raw_password']);
+    }
+
+    public function rejectApplication(Request $request, Application $application, ApplicationService $service)
+    {
+        $school = $this->getSchool();
+        if ($application->school_id !== $school->id) {
+            abort(403);
+        }
+        
+        if ($application->status !== 'pending') {
+             return redirect()->back()->with('error', 'Application already processed.');
+        }
+        
+        $validated = $request->validate([
+            'reason' => 'required|string|max:1000'
+        ]);
+        
+        $service->rejectApplication($application, auth()->user(), $validated['reason']);
+        
+        return redirect()->back()->with('success', 'Application rejected.');
     }
 }

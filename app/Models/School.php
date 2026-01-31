@@ -24,6 +24,11 @@ class School extends Model
         return $this->belongsTo(District::class);
     }
 
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
+
     public function users()
     {
         return $this->hasMany(User::class);

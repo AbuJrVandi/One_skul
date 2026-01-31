@@ -80,19 +80,28 @@ export default function Login({ status, canResetPassword }) {
                     </label>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                        >
-                            Forgot your password?
-                        </Link>
-                    )}
+                <div className="mt-4 flex items-center justify-between">
+                    <Link
+                        href={route('apply.discovery')}
+                        className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+                    >
+                        Apply to a School &rarr;
+                    </Link>
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
+                    <div className="flex items-center">
+                        {canResetPassword && (
+                            <Link
+                                href={route('password.request')}
+                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                            >
+                                Forgot your password?
+                            </Link>
+                        )}
+
+                        <PrimaryButton className="ms-4" disabled={processing}>
+                            Log in
+                        </PrimaryButton>
+                    </div>
                 </div>
             </form>
         </GuestLayout>

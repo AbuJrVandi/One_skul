@@ -36,11 +36,29 @@ export default function ClassView({ auth, schoolClass, students, flash }) {
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
                         <h2 className="font-extrabold text-2xl text-gray-900 leading-tight">{schoolClass.name} Registry</h2>
                         <p className="text-xs text-indigo-600 font-bold uppercase tracking-widest">Class Management Workspace</p>
                     </div>
+
+                    <div className="flex gap-2">
+                        <a
+                            href={route('teacher.class.attendance.index', schoolClass.id)}
+                            className="bg-purple-50 text-purple-700 px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-purple-100 transition-colors flex items-center"
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                            Attendance
+                        </a>
+                        <a
+                            href={route('teacher.class.grades.index', schoolClass.id)}
+                            className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-blue-100 transition-colors flex items-center"
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
+                            Grades
+                        </a>
+                    </div>
+
                     <PrimaryButton onClick={() => setIsAdding(!isAdding)}>
                         {isAdding ? 'Close Form' : 'Enroll New Student'}
                     </PrimaryButton>
