@@ -85,6 +85,17 @@ export default function Dashboard({ auth, school, stats, notices }) {
                                 </Link>
 
                                 <Link
+                                    href={route('principal.applications.index')}
+                                    className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group"
+                                >
+                                    <h3 className="text-xl font-black text-gray-900 mb-2 text-left">Student Applications</h3>
+                                    <p className="text-gray-500 text-sm mb-6 text-left">Review incoming student applications, approve admissions, and auto-generate accounts.</p>
+                                    <span className="text-green-600 font-bold flex items-center group-hover:underline">
+                                        Review Applications <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" /></svg>
+                                    </span>
+                                </Link>
+
+                                <Link
                                     href={route('principal.classes.index')}
                                     className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group"
                                 >
@@ -92,6 +103,17 @@ export default function Dashboard({ auth, school, stats, notices }) {
                                     <p className="text-gray-500 text-sm mb-6 text-left">Define classes from Class 1 to SSS 3 and assign teachers to them.</p>
                                     <span className="text-indigo-600 font-bold flex items-center group-hover:underline">
                                         Manage Classes <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" /></svg>
+                                    </span>
+                                </Link>
+
+                                <Link
+                                    href={route('principal.subjects.index')}
+                                    className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group md:col-span-2"
+                                >
+                                    <h3 className="text-xl font-black text-gray-900 mb-2 text-left">Subject Management</h3>
+                                    <p className="text-gray-500 text-sm mb-6 text-left">Enable/disable subjects for your school and assign them to classes. Subjects are defined at platform level.</p>
+                                    <span className="text-purple-600 font-bold flex items-center group-hover:underline">
+                                        Manage Subjects <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" /></svg>
                                     </span>
                                 </Link>
                             </div>
@@ -151,7 +173,7 @@ export default function Dashboard({ auth, school, stats, notices }) {
                                 {notices.length > 0 ? notices.map((notice) => (
                                     <div key={notice.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
                                         <div className={`absolute top-0 left-0 w-1 h-full ${notice.target_audience === 'all' ? 'bg-indigo-500' :
-                                                notice.target_audience === 'teachers' ? 'bg-emerald-500' : 'bg-orange-500'
+                                            notice.target_audience === 'teachers' ? 'bg-emerald-500' : 'bg-orange-500'
                                             }`}></div>
                                         <span className="text-[10px] font-black uppercase text-gray-400 tracking-tighter">{new Date(notice.created_at).toLocaleString()}</span>
                                         <h4 className="font-black text-gray-900 mt-1 mb-2 group-hover:text-indigo-600 transition-colors">{notice.title}</h4>

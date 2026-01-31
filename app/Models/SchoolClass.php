@@ -25,4 +25,12 @@ class SchoolClass extends Model
     {
         return $this->hasMany(Student::class);
     }
+
+    /**
+     * Get subjects assigned to this class
+     */
+    public function subjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Subject::class, 'class_subject');
+    }
 }

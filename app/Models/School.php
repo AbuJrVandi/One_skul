@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Subjects\Models\SchoolSubject;
 
 class School extends Model
 {
@@ -42,5 +43,34 @@ class School extends Model
     public function students()
     {
         return $this->hasMany(Student::class);
+    }
+
+    /**
+     * Get school-subject pivot records for this school
+     */
+    public function schoolSubjects()
+    {
+        return $this->hasMany(SchoolSubject::class);
+    }
+
+    /**
+     * Get enabled subjects for this school
+     */
+    public function enabledSubjects()
+    {
+        return Subject::active()
+            ->whereHas('schoolSubjects', function ($query) {
+                $query->where('school_id', $this->id)
+                      ->where('is_enabled', true);
+            })
+            ->orWhereDoesntHave('schoolSubjects', function ($query) {
+                $query->where('school_id', $this->id);
+            })
+            ->where('is_active', true);
+    }
+
+    public function classes()
+    {
+        return $this->hasMany(SchoolClass::class);
     }
 }

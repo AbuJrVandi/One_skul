@@ -45,6 +45,18 @@ export default function Dashboard({ auth, stats, recentSchools }) {
                                 >
                                     Manage Schools
                                 </Link>
+                                <Link
+                                    href={route('admin.subjects.index')}
+                                    className="block w-full text-center px-4 py-3 bg-purple-50 text-purple-700 font-semibold rounded-md hover:bg-purple-100 transition-colors"
+                                >
+                                    Manage Subjects
+                                </Link>
+                                <Link
+                                    href={route('admin.terms.index')}
+                                    className="block w-full text-center px-4 py-3 bg-orange-50 text-orange-700 font-semibold rounded-md hover:bg-orange-100 transition-colors"
+                                >
+                                    Manage Terms
+                                </Link>
                             </div>
                         </div>
 

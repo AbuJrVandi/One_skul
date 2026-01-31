@@ -73,6 +73,25 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsSuperAdmin::class])-
     Route::patch('/schools/{school}', [AdminController::class, 'updateSchool'])->name('schools.update');
     Route::delete('/schools/{school}', [AdminController::class, 'deleteSchool'])->name('schools.destroy');
     Route::post('/schools/{school}/toggle-approval', [AdminController::class, 'toggleApproval'])->name('schools.toggle-approval');
+
+    // Subject Management (Super Admin)
+    Route::get('/subjects', [\App\Modules\Subjects\Controllers\SubjectController::class, 'index'])->name('subjects.index');
+    Route::post('/subjects', [\App\Modules\Subjects\Controllers\SubjectController::class, 'store'])->name('subjects.store');
+    Route::patch('/subjects/{subject}', [\App\Modules\Subjects\Controllers\SubjectController::class, 'update'])->name('subjects.update');
+    Route::post('/subjects/{subject}/deactivate', [\App\Modules\Subjects\Controllers\SubjectController::class, 'deactivate'])->name('subjects.deactivate');
+    Route::post('/subjects/{subject}/activate', [\App\Modules\Subjects\Controllers\SubjectController::class, 'activate'])->name('subjects.activate');
+
+    // Term Management (Super Admin)
+    Route::get('/terms', [\App\Modules\Terms\Controllers\TermController::class, 'index'])->name('terms.index');
+    Route::post('/terms', [\App\Modules\Terms\Controllers\TermController::class, 'store'])->name('terms.store');
+    Route::patch('/terms/{term}', [\App\Modules\Terms\Controllers\TermController::class, 'update'])->name('terms.update');
+    Route::post('/terms/{term}/deactivate', [\App\Modules\Terms\Controllers\TermController::class, 'deactivate'])->name('terms.deactivate');
+    Route::post('/terms/{term}/activate', [\App\Modules\Terms\Controllers\TermController::class, 'activate'])->name('terms.activate');
+    
+    // Academic Year Management (Super Admin)
+    Route::post('/academic-years', [\App\Modules\Terms\Controllers\TermController::class, 'storeAcademicYear'])->name('academic-years.store');
+    Route::patch('/academic-years/{academicYear}', [\App\Modules\Terms\Controllers\TermController::class, 'updateAcademicYear'])->name('academic-years.update');
+    Route::post('/academic-years/{academicYear}/set-current', [\App\Modules\Terms\Controllers\TermController::class, 'setCurrent'])->name('academic-years.set-current');
 });
 
 // Principal (School Admin) Routes
@@ -99,6 +118,18 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsPrincipal::class])->
     Route::post('/notices', [PrincipalController::class, 'storeNotice'])->name('notices.store');
     
     Route::get('/students', [PrincipalController::class, 'students'])->name('students.index');
+
+    // Subject Management (Principal - enable/disable & assign to classes)
+    Route::get('/subjects', [\App\Modules\Subjects\Controllers\SchoolSubjectController::class, 'index'])->name('subjects.index');
+    Route::post('/subjects/{subject}/toggle', [\App\Modules\Subjects\Controllers\SchoolSubjectController::class, 'toggle'])->name('subjects.toggle');
+    Route::get('/subjects/class-assignment', [\App\Modules\Subjects\Controllers\SchoolSubjectController::class, 'classAssignment'])->name('subjects.class-assignment');
+    Route::post('/classes/{schoolClass}/assign-subjects', [\App\Modules\Subjects\Controllers\SchoolSubjectController::class, 'assignSubjects'])->name('classes.assign-subjects');
+
+    // Student Application Management (New Module)
+    Route::get('/student-applications', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'index'])->name('principal.applications.index');
+    Route::get('/student-applications/{application}', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'show'])->name('principal.applications.show');
+    Route::post('/student-applications/{application}/approve', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'approve'])->name('principal.applications.approve');
+    Route::post('/student-applications/{application}/reject', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'reject'])->name('principal.applications.reject');
 });
 
 // Teacher Routes
@@ -121,6 +152,25 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
     Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance');
     Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades');
+});
+
+
+// -----------------------------------------------------------------------------
+// Public Student Application Routes
+// -----------------------------------------------------------------------------
+Route::group(['prefix' => 'schools/{school}/apply'], function () {
+    Route::get('/', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'start'])->name('public.applications.start');
+    Route::get('/form', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'form'])->name('public.applications.form');
+    Route::post('/form', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'storeForm'])->name('public.applications.store');
+    
+    Route::get('/{ref}/review', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'review'])->name('public.applications.review');
+    Route::post('/{ref}/confirm', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'confirmReview'])->name('public.applications.confirm');
+    
+    Route::get('/{ref}/payment', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'payment'])->name('public.applications.payment');
+    Route::post('/{ref}/pay', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'submitPayment'])->name('public.applications.pay');
+    
+    Route::get('/{ref}/confirmation', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'confirmation'])->name('public.applications.confirmation');
+    Route::get('/{ref}/download', [\App\Modules\Applications\Controllers\PublicApplicationController::class, 'downloadPdf'])->name('public.applications.download');
 });
 
 require __DIR__.'/auth.php';

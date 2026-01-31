@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Term extends Model
 {
-    protected $fillable = ['academic_year_id', 'name', 'term_number'];
+    protected $fillable = ['academic_year_id', 'name', 'term_number', 'is_active'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
     public function academicYear(): BelongsTo
     {
@@ -18,5 +22,13 @@ class Term extends Model
     public function reportCards(): HasMany
     {
         return $this->hasMany(ReportCard::class);
+    }
+
+    /**
+     * Scope to only active terms
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }

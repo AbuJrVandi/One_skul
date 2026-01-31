@@ -77,9 +77,9 @@ class AttendanceController extends Controller
                     [
                         'student_id' => $record['student_id'],
                         'date' => $validated['date'],
-                        'school_class_id' => $schoolClass->id,
                     ],
                     [
+                        'school_class_id' => $schoolClass->id,
                         'school_id' => $teacher->school_id,
                         'teacher_id' => $teacher->id,
                         'status' => $record['status'],

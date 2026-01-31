@@ -31,9 +31,18 @@ class GradeController extends Controller
         $subjectId = $request->input('subject_id');
         $termId = $request->input('term_id');
 
-        // Data for dropdowns
-        $subjects = Subject::all(); // simplified for MVP, ideally scoped by school/class
-        $terms = Term::all(); // simplified
+        // Data for dropdowns - use class-assigned subjects if available, 
+        // otherwise fall back to school's enabled subjects
+        $subjects = $schoolClass->subjects()->get();
+        if ($subjects->isEmpty()) {
+            // Fallback: get all active subjects for this level
+            $subjects = Subject::active()
+                ->forLevel($schoolClass->level)
+                ->get();
+        }
+
+        // Get active terms only
+        $terms = Term::active()->with('academicYear')->get();
 
         // Load students
         $students = $schoolClass->students()
@@ -88,9 +97,9 @@ class GradeController extends Controller
                         'student_id' => $record['student_id'],
                         'subject_id' => $validated['subject_id'],
                         'term_id' => $validated['term_id'],
-                        'school_class_id' => $schoolClass->id,
                     ],
                     [
+                        'school_class_id' => $schoolClass->id,
                         'school_id' => $teacher->school_id,
                         'teacher_id' => $teacher->id,
                         'score' => $record['score'],
