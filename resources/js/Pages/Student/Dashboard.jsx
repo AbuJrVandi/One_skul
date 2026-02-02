@@ -67,7 +67,7 @@ export default function Dashboard({ auth, student, school, class: schoolClass, n
 
                             {/* Profile Card */}
                             <Link
-                                href={route('profile.edit')}
+                                href={route('student.profile')}
                                 className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer"
                             >
                                 <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all">

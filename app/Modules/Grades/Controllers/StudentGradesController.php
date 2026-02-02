@@ -21,6 +21,12 @@ class StudentGradesController extends Controller
             ->with(['subject', 'term', 'teacher'])
             ->orderBy('created_at', 'desc')
             ->get();
+
+        \Illuminate\Support\Facades\Log::info('Student Fetching Grades', [
+            'user_id' => $user->id,
+            'student_id' => $student->id,
+            'count' => $grades->count()
+        ]);
             
         return Inertia::render('Student/Grades/Index', [
             'student' => $student,

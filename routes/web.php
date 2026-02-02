@@ -63,6 +63,15 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsSuperAdmin::class])-
     Route::get('/portal', [AdminController::class, 'portal'])->name('portal.index');
     Route::get('/portal/schools/{school}', [AdminController::class, 'schoolPortal'])->name('portal.show');
     
+    // Principal Management
+    Route::post('/portal/schools/{school}/principal/reset-password', [AdminController::class, 'resetPrincipalPassword'])->name('portal.principal.reset-password');
+    Route::post('/portal/schools/{school}/principal/toggle-status', [AdminController::class, 'togglePrincipalStatus'])->name('portal.principal.toggle-status');
+    
+    // Report Card Settings
+    Route::post('/portal/schools/{school}/report-settings', [AdminController::class, 'updateReportSettings'])->name('portal.report-settings.update');
+    Route::post('/portal/schools/{school}/report-assets', [AdminController::class, 'uploadReportAsset'])->name('portal.report-assets.upload');
+    Route::get('/reports/preview/{school}', [\App\Http\Controllers\ReportCardController::class, 'preview'])->name('reports.preview');
+    
     Route::get('/districts', [AdminController::class, 'districts'])->name('districts.index');
     Route::post('/districts', [AdminController::class, 'storeDistrict'])->name('districts.store');
     Route::patch('/districts/{district}', [AdminController::class, 'updateDistrict'])->name('districts.update');
@@ -152,6 +161,11 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
     Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance');
     Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades');
+    Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
+    Route::post('/profile', [StudentController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/photo', [StudentController::class, 'updatePhoto'])->name('profile.photo');
+    Route::delete('/profile/photo', [StudentController::class, 'removePhoto'])->name('profile.photo.remove');
+    Route::get('/report-card/{student}/{term}', [\App\Http\Controllers\ReportCardController::class, 'download'])->name('report-card.download');
 });
 
 

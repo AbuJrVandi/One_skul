@@ -73,4 +73,14 @@ class School extends Model
     {
         return $this->hasMany(SchoolClass::class);
     }
+
+    public function reportSettings()
+    {
+        return $this->hasOne(SchoolReportSetting::class);
+    }
+
+    public function reportAssets()
+    {
+        return $this->hasMany(SchoolReportAsset::class);
+    }
 }

@@ -21,6 +21,12 @@ class StudentAttendanceController extends Controller
             ->with(['schoolClass', 'teacher'])
             ->orderBy('date', 'desc')
             ->get();
+
+        \Illuminate\Support\Facades\Log::info('Student Fetching Attendance', [
+            'user_id' => $user->id,
+            'student_id' => $student->id,
+            'count' => $attendance->count()
+        ]);
             
         // Simple stats
         $stats = [

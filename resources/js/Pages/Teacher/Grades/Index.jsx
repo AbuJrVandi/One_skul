@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
@@ -9,15 +9,28 @@ export default function GradesIndex({ auth, schoolClass, students, subjects, ter
     // Helper to find existing grade for a student
     const getGrade = (studentId) => existingGrades[studentId] || { score: '', remarks: '' };
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm({
         subject_id: filters.subject_id || '',
         term_id: filters.term_id || '',
         grades: students.map(student => ({
             student_id: student.id,
-            score: getGrade(student.id).score,
-            remarks: getGrade(student.id).remarks
+            score: getGrade(student.id).score || '',
+            remarks: getGrade(student.id).remarks || ''
         }))
     });
+
+    // Sync form data when filters change (component re-renders with new props)
+    useEffect(() => {
+        setData({
+            subject_id: filters.subject_id || '',
+            term_id: filters.term_id || '',
+            grades: students.map(student => ({
+                student_id: student.id,
+                score: getGrade(student.id).score || '',
+                remarks: getGrade(student.id).remarks || ''
+            }))
+        });
+    }, [filters.subject_id, filters.term_id, existingGrades]);
 
     // Update local state when filters change, but we actually need to reload page to let backend fetch `existingGrades`
     const handleFilterChange = (field, value) => {
@@ -25,7 +38,7 @@ export default function GradesIndex({ auth, schoolClass, students, subjects, ter
         router.get(
             route('teacher.class.grades.index', schoolClass.id),
             newFilters,
-            { preserveState: true, preserveScroll: true }
+            { preserveScroll: true }
         );
     };
 
@@ -39,7 +52,7 @@ export default function GradesIndex({ auth, schoolClass, students, subjects, ter
         e.preventDefault();
         post(route('teacher.class.grades.store', schoolClass.id), {
             preserveScroll: true,
-            onSuccess: () => alert('Grades saved successfully!')
+            // Flash message will be displayed by AuthenticatedLayout
         });
     };
 

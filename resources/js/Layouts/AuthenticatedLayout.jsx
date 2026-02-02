@@ -82,6 +82,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <NavLink href={route('student.grades')} active={route().current('student.grades')}>
                                             My Grades
                                         </NavLink>
+                                        <NavLink href={route('student.profile')} active={route().current('student.profile')}>
+                                            My Profile
+                                        </NavLink>
                                     </>
                                 )}
                             </div>
@@ -202,6 +205,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                 <ResponsiveNavLink href={route('student.grades')} active={route().current('student.grades')}>
                                     My Grades
                                 </ResponsiveNavLink>
+                                <ResponsiveNavLink href={route('student.profile')} active={route().current('student.profile')}>
+                                    My Profile
+                                </ResponsiveNavLink>
                             </>
                         )}
                     </div>
@@ -238,6 +244,53 @@ export default function AuthenticatedLayout({ header, children }) {
                         {header}
                     </div>
                 </header>
+            )}
+
+            {/* Flash Messages */}
+            {usePage().props.flash?.success && (
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
+                    <div className="bg-green-50 border-l-4 border-green-400 p-4 shadow-sm rounded-r-md flex items-center justify-between">
+                        <div className="flex items-center">
+                            <svg className="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <p className="font-bold text-green-800">Success</p>
+                                <p className="text-sm text-green-700">{usePage().props.flash.success}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Flash Error Messages */}
+            {usePage().props.flash?.error && (
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
+                    <div className="bg-red-50 border-l-4 border-red-400 p-4 shadow-sm rounded-r-md flex items-center">
+                        <svg className="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <p className="font-bold text-red-800">Error</p>
+                            <p className="text-sm text-red-700">{usePage().props.flash.error}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Validation Errors */}
+            {usePage().props.errors?.error && (
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
+                    <div className="bg-red-50 border-l-4 border-red-400 p-4 shadow-sm rounded-r-md flex items-center">
+                        <svg className="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <p className="font-bold text-red-800">System Error</p>
+                            <p className="text-sm text-red-700">{usePage().props.errors.error}</p>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <main>{children}</main>

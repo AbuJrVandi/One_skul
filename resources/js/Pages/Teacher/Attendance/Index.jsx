@@ -43,7 +43,7 @@ export default function AttendanceIndex({ auth, schoolClass, students, date, att
         router.get(
             route('teacher.class.attendance.index', schoolClass.id),
             { date: newDate },
-            { preserveState: true, preserveScroll: true }
+            { preserveScroll: true }
         );
     };
 
@@ -110,11 +110,11 @@ export default function AttendanceIndex({ auth, schoolClass, students, date, att
                                                                 type="button"
                                                                 onClick={() => handleStatusChange(index, statusOption)}
                                                                 className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${data.attendance[index].status === statusOption
-                                                                        ? statusOption === 'present' ? 'bg-green-500 text-white shadow-md'
-                                                                            : statusOption === 'absent' ? 'bg-red-500 text-white shadow-md'
-                                                                                : statusOption === 'late' ? 'bg-orange-400 text-white shadow-md'
-                                                                                    : 'bg-blue-400 text-white shadow-md'
-                                                                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                                                                    ? statusOption === 'present' ? 'bg-green-500 text-white shadow-md'
+                                                                        : statusOption === 'absent' ? 'bg-red-500 text-white shadow-md'
+                                                                            : statusOption === 'late' ? 'bg-orange-400 text-white shadow-md'
+                                                                                : 'bg-blue-400 text-white shadow-md'
+                                                                    : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
                                                                     }`}
                                                             >
                                                                 {statusOption.charAt(0)}

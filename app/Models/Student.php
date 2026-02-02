@@ -8,6 +8,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
+    protected static function booted()
+    {
+        static::deleting(function ($student) {
+            if ($student->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($student->profile_photo_path);
+            }
+        });
+    }
+
     protected $fillable = [
         'school_id', 
         'first_name', 
@@ -20,6 +29,7 @@ class Student extends Model
         'emergency_contact',
         'user_id',
         'photo_path',
+        'profile_photo_path',
         'school_class_id',
     ];
 
@@ -42,4 +52,13 @@ class Student extends Model
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        return $this->profile_photo_path 
+            ? asset('storage/' . $this->profile_photo_path) 
+            : null;
+    }
+
+    protected $appends = ['full_name', 'photo_url'];
 }
