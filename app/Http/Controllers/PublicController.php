@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\District;
 use App\Models\School;
+use App\Models\User;
+use App\Models\Student;
 use Inertia\Inertia;
 
 class PublicController extends Controller
@@ -37,10 +39,34 @@ class PublicController extends Controller
             abort(404);
         }
 
-        $school->load('district');
+        $school->load(['district', 'profilePhotos']);
+
+        $studentCount = Student::where('school_id', $school->id)->count();
+        $teacherCount = User::where('school_id', $school->id)->where('role', 'teacher')->count();
+
+        $user = auth()->user();
+        $canManage = $user && $user->role === 'admin' && $user->school_id === $school->id;
 
         return Inertia::render('SchoolProfile', [
-            'school' => $school
+            'school' => $school,
+            'stats' => [
+                'students' => $studentCount,
+                'teachers' => $teacherCount,
+            ],
+            'profile' => [
+                'levels' => $school->levels ?? [],
+                'faculties' => $school->faculties ?? [],
+                'photos' => $school->profilePhotos
+                    ->map(function ($photo) {
+                        return [
+                            'id' => $photo->id,
+                            'url' => $photo->url,
+                            'caption' => $photo->caption,
+                        ];
+                    })
+                    ->values(),
+            ],
+            'canManage' => $canManage,
         ]);
     }
 }

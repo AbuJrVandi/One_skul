@@ -76,17 +76,6 @@ export default function Show({ auth, school, principal, stats }) {
                         )}
                     </div>
 
-                    {/* Preserved Stats (Hidden but accessible via data if needed) */}
-                    <div className="mt-12 opacity-50 border-t pt-8 flex gap-8">
-                        <div>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Total Enrollment</span>
-                            <span className="text-xl font-black text-gray-700">{stats.students} Students</span>
-                        </div>
-                        <div>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Active Curriculum</span>
-                            <span className="text-xl font-black text-gray-700">{stats.subjects} Subjects</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>

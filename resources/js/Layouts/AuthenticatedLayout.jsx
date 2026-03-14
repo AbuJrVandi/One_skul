@@ -18,7 +18,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
+                                <Link href={user.role === 'admin' && user.school_id ? route('public.school', user.school_id) : '/'}>
                                     <ApplicationLogo className="block h-10 w-auto" />
                                 </Link>
                             </div>

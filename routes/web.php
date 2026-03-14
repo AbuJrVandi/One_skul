@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SchoolProfileController;
 
 // Public Routes
 Route::get('/', [PublicController::class, 'home'])->name('home');
@@ -64,6 +65,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsSuperAdmin::class])-
     Route::get('/portal/schools/{school}', [AdminController::class, 'schoolPortal'])->name('portal.show');
     
     // Principal Management
+    Route::post('/portal/schools/{school}/principal/create', [AdminController::class, 'createPrincipal'])->name('portal.principal.create');
     Route::post('/portal/schools/{school}/principal/reset-password', [AdminController::class, 'resetPrincipalPassword'])->name('portal.principal.reset-password');
     Route::post('/portal/schools/{school}/principal/toggle-status', [AdminController::class, 'togglePrincipalStatus'])->name('portal.principal.toggle-status');
     
@@ -107,11 +109,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsSuperAdmin::class])-
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsPrincipal::class])->prefix('school-admin')->name('principal.')->group(function () {
     Route::get('/dashboard', [PrincipalController::class, 'dashboard'])->name('dashboard');
     
-    // Application Management
-    Route::get('/applications', [PrincipalController::class, 'applications'])->name('applications.index');
-    Route::get('/applications/{application}', [PrincipalController::class, 'showApplication'])->name('applications.show');
-    Route::post('/applications/{application}/approve', [PrincipalController::class, 'approveApplication'])->name('applications.approve');
-    Route::post('/applications/{application}/reject', [PrincipalController::class, 'rejectApplication'])->name('applications.reject');
+    // Application Management (Student Applications Module)
+    Route::get('/applications', function () {
+        return redirect()->route('principal.applications.index');
+    })->name('applications.redirect');
     
     Route::get('/teachers', [PrincipalController::class, 'teachers'])->name('teachers.index');
     Route::post('/teachers', [PrincipalController::class, 'storeTeacher'])->name('teachers.store');
@@ -128,6 +129,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsPrincipal::class])->
     
     Route::get('/students', [PrincipalController::class, 'students'])->name('students.index');
 
+    // School Profile Management (Principal Only)
+    Route::patch('/school-profile', [SchoolProfileController::class, 'update'])->name('school-profile.update');
+    Route::post('/school-profile/photos', [SchoolProfileController::class, 'storePhoto'])->name('school-profile.photos.store');
+    Route::delete('/school-profile/photos/{photo}', [SchoolProfileController::class, 'destroyPhoto'])->name('school-profile.photos.destroy');
+
     // Subject Management (Principal - enable/disable & assign to classes)
     Route::get('/subjects', [\App\Modules\Subjects\Controllers\SchoolSubjectController::class, 'index'])->name('subjects.index');
     Route::post('/subjects/{subject}/toggle', [\App\Modules\Subjects\Controllers\SchoolSubjectController::class, 'toggle'])->name('subjects.toggle');
@@ -135,10 +141,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsPrincipal::class])->
     Route::post('/classes/{schoolClass}/assign-subjects', [\App\Modules\Subjects\Controllers\SchoolSubjectController::class, 'assignSubjects'])->name('classes.assign-subjects');
 
     // Student Application Management (New Module)
-    Route::get('/student-applications', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'index'])->name('principal.applications.index');
-    Route::get('/student-applications/{application}', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'show'])->name('principal.applications.show');
-    Route::post('/student-applications/{application}/approve', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'approve'])->name('principal.applications.approve');
-    Route::post('/student-applications/{application}/reject', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'reject'])->name('principal.applications.reject');
+    Route::get('/student-applications', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'index'])->name('applications.index');
+    Route::get('/student-applications/{application}', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'show'])->name('applications.show');
+    Route::post('/student-applications/{application}/approve', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'approve'])->name('applications.approve');
+    Route::post('/student-applications/{application}/reject', [\App\Modules\Applications\Controllers\PrincipalApplicationController::class, 'reject'])->name('applications.reject');
 });
 
 // Teacher Routes

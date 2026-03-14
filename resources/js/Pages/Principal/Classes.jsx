@@ -212,73 +212,96 @@ export default function Classes({ auth, classes = [], teachers = [] }) {
                         </div>
                     )}
 
-                    {/* Classes Grid / Empty State */}
+                    {/* Classes List / Empty State */}
                     {Array.isArray(classes) && classes.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {classes.map((cls) => (
-                                <div key={cls.id} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col justify-between group relative overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
-                                    <div className="relative z-10">
-                                        <div className="flex justify-between items-start mb-6">
-                                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${cls.level === 'primary' ? 'bg-green-100 text-green-700' :
-                                                cls.level === 'jss' ? 'bg-orange-100 text-orange-700' : 'bg-rose-100 text-rose-700'
-                                                }`}>
-                                                {cls.level}
-                                            </div>
-                                            <div className="flex space-x-2">
-                                                <button onClick={() => startEditing(cls)} className="p-2.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all" title="Edit Class">
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                                </button>
-                                                <button onClick={() => deleteClass(cls.id)} className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" title="Delete Class">
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setAssigningClass(cls);
-                                                        setSelectedTeachers(cls.teachers.map(t => t.id));
-                                                    }}
-                                                    className={`p-2.5 rounded-xl transition-all ${cls.teachers.length > 0 ? 'text-indigo-600 bg-indigo-50 hover:bg-indigo-100' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'}`}
-                                                    title="Assign Staff"
-                                                >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-3xl font-black text-gray-900 mb-2 leading-tight tracking-tighter">{cls.name}</h3>
-                                        <p className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest">{cls.students_count} Active Students</p>
-
-                                        <div className="flex flex-wrap gap-2 mb-8">
-                                            {cls.teachers.length > 0 ? (
-                                                cls.teachers.map((t) => (
-                                                    <div key={t.id} className="flex items-center bg-indigo-50/50 px-3 py-1.5 rounded-xl border border-indigo-100">
-                                                        <div className="w-5 h-5 rounded-full bg-indigo-600 text-[9px] text-white flex items-center justify-center mr-2 font-black shadow-md shadow-indigo-200">{t.name.charAt(0)}</div>
-                                                        <span className="text-[11px] font-black text-indigo-700 uppercase tracking-tight">{t.name}</span>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div
-                                                    onClick={() => {
-                                                        setAssigningClass(cls);
-                                                        setSelectedTeachers([]);
-                                                    }}
-                                                    className="w-full text-[10px] text-rose-500 font-black uppercase tracking-widest bg-rose-50 px-4 py-3 rounded-2xl border border-rose-100 cursor-pointer hover:bg-rose-100 transition-all text-center flex items-center justify-center gap-2"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="3" /></svg>
-                                                    Assign Teacher Now
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <Link
-                                        href={route('principal.students.index', { class_id: cls.id })}
-                                        className="w-full py-5 bg-gray-50 text-gray-400 text-[11px] font-black uppercase tracking-[0.2em] text-center rounded-[1.5rem] hover:bg-indigo-600 hover:text-white hover:shadow-xl hover:shadow-indigo-100 transition-all"
-                                    >
-                                        Enrollment Records
-                                    </Link>
-
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600 opacity-[0.02] rounded-full -mr-16 -mt-16 group-hover:opacity-[0.05] transition-opacity"></div>
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Class Directory</h3>
+                                    <p className="text-sm text-gray-500">Manage classes, assign staff, and review enrollment.</p>
                                 </div>
-                            ))}
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-100 text-sm">
+                                    <thead className="bg-gray-50 text-gray-500 uppercase text-[11px] tracking-widest">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left font-bold">Class</th>
+                                            <th className="px-6 py-3 text-left font-bold">Level</th>
+                                            <th className="px-6 py-3 text-left font-bold">Students</th>
+                                            <th className="px-6 py-3 text-left font-bold">Teachers</th>
+                                            <th className="px-6 py-3 text-right font-bold">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {classes.map((cls) => {
+                                            const teacherNames = cls.teachers?.map((t) => t.name) ?? [];
+                                            const visibleTeachers = teacherNames.slice(0, 2);
+                                            const extraTeachers = teacherNames.length - visibleTeachers.length;
+
+                                            return (
+                                                <tr key={cls.id} className="hover:bg-gray-50">
+                                                    <td className="px-6 py-4 font-semibold text-gray-900">{cls.name}</td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${cls.level === 'primary' ? 'bg-green-100 text-green-700' :
+                                                            cls.level === 'jss' ? 'bg-orange-100 text-orange-700' : 'bg-rose-100 text-rose-700'
+                                                            }`}>
+                                                            {cls.level}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-gray-600">{cls.students_count}</td>
+                                                    <td className="px-6 py-4 text-gray-600">
+                                                        {teacherNames.length > 0 ? (
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {visibleTeachers.map((name) => (
+                                                                    <span key={name} className="px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
+                                                                        {name}
+                                                                    </span>
+                                                                ))}
+                                                                {extraTeachers > 0 && (
+                                                                    <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-semibold">
+                                                                        +{extraTeachers} more
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs text-gray-400 italic">No teachers assigned</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right space-x-2">
+                                                        <button
+                                                            onClick={() => startEditing(cls)}
+                                                            className="inline-flex items-center px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-100"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setAssigningClass(cls);
+                                                                setSelectedTeachers(cls.teachers.map((t) => t.id));
+                                                            }}
+                                                            className="inline-flex items-center px-3 py-2 rounded-lg bg-gray-100 text-gray-700 text-xs font-bold hover:bg-gray-200"
+                                                        >
+                                                            Assign
+                                                        </button>
+                                                        <Link
+                                                            href={route('principal.students.index', { class_id: cls.id })}
+                                                            className="inline-flex items-center px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold hover:bg-emerald-100"
+                                                        >
+                                                            Records
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => deleteClass(cls.id)}
+                                                            className="inline-flex items-center px-3 py-2 rounded-lg bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     ) : (
                         <div className="bg-white py-32 px-10 rounded-[4rem] border-2 border-dashed border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">

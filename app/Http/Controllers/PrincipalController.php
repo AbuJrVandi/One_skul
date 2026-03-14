@@ -11,6 +11,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Application;
 use App\Services\ApplicationService;
+use App\Modules\Applications\Models\Application as StudentApplication;
+use Carbon\Carbon;
 
 class PrincipalController extends Controller
 {
@@ -22,13 +24,116 @@ class PrincipalController extends Controller
     public function dashboard()
     {
         $school = $this->getSchool();
-        
+        $now = Carbon::now();
+
+        $studentsCount = Student::where('school_id', $school->id)->count();
+        $teachersCount = User::where('school_id', $school->id)->where('role', 'teacher')->count();
+        $classesCount = SchoolClass::where('school_id', $school->id)->count();
+
+        $applicationsBase = StudentApplication::where('school_id', $school->id);
+        $applicationsTotal = (clone $applicationsBase)->submitted()->count();
+        $applicationsPending = (clone $applicationsBase)->pending()->count();
+        $applicationsApproved = (clone $applicationsBase)->where('status', 'approved')->count();
+        $applicationsRejected = (clone $applicationsBase)->where('status', 'rejected')->count();
+
+        $applicationsStatus = [
+            ['name' => 'Pending', 'value' => $applicationsPending],
+            ['name' => 'Approved', 'value' => $applicationsApproved],
+            ['name' => 'Rejected', 'value' => $applicationsRejected],
+        ];
+
+        $months = collect(range(11, 0))->map(function ($i) use ($now) {
+            return $now->copy()->subMonths($i)->startOfMonth();
+        });
+        $studentsSince = $months->first()->copy();
+        $studentsForTrend = Student::where('school_id', $school->id)
+            ->where('created_at', '>=', $studentsSince)
+            ->get(['id', 'created_at']);
+        $studentsGrouped = $studentsForTrend->groupBy(function ($student) {
+            return $student->created_at->format('Y-m');
+        });
+        $enrollmentTrend = $months->map(function ($month) use ($studentsGrouped) {
+            $key = $month->format('Y-m');
+            $group = $studentsGrouped->get($key, collect());
+            return [
+                'month' => $month->format('M Y'),
+                'total' => $group->count(),
+            ];
+        })->values();
+
+        $days = collect(range(13, 0))->map(function ($i) use ($now) {
+            return $now->copy()->subDays($i)->startOfDay();
+        });
+        $appsSince = $days->first()->copy();
+        $appsForTrend = StudentApplication::where('school_id', $school->id)
+            ->where('status', '!=', 'draft')
+            ->where(function ($query) use ($appsSince) {
+                $query->where('submitted_at', '>=', $appsSince)
+                    ->orWhere('created_at', '>=', $appsSince);
+            })
+            ->get(['id', 'submitted_at', 'created_at']);
+        $appsGrouped = $appsForTrend->groupBy(function ($app) {
+            $date = $app->submitted_at ?? $app->created_at;
+            return $date->format('Y-m-d');
+        })->map->count();
+        $applicationsTrend = $days->map(function ($day) use ($appsGrouped) {
+            $key = $day->format('Y-m-d');
+            return [
+                'date' => $day->format('M d'),
+                'total' => (int) ($appsGrouped[$key] ?? 0),
+            ];
+        })->values();
+
+        $classSizes = SchoolClass::where('school_id', $school->id)
+            ->withCount('students')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($class) {
+                return [
+                    'name' => $class->name,
+                    'students' => $class->students_count,
+                    'level' => $class->level,
+                ];
+            })
+            ->values();
+
+        $studentsLast30Days = Student::where('school_id', $school->id)
+            ->where('created_at', '>=', $now->copy()->subDays(30))
+            ->count();
+        $applicationsLast30Days = StudentApplication::where('school_id', $school->id)
+            ->where('status', '!=', 'draft')
+            ->where(function ($query) use ($now) {
+                $query->where('submitted_at', '>=', $now->copy()->subDays(30))
+                    ->orWhere('created_at', '>=', $now->copy()->subDays(30));
+            })
+            ->count();
+
         return Inertia::render('Principal/Dashboard', [
             'school' => $school,
             'stats' => [
-                'students' => Student::where('school_id', $school->id)->count(),
-                'teachers' => User::where('school_id', $school->id)->where('role', 'teacher')->count(),
-                'classes' => SchoolClass::where('school_id', $school->id)->count(),
+                'students' => $studentsCount,
+                'teachers' => $teachersCount,
+                'classes' => $classesCount,
+            ],
+            'analytics' => [
+                'kpis' => [
+                    'students' => $studentsCount,
+                    'teachers' => $teachersCount,
+                    'classes' => $classesCount,
+                    'applications' => $applicationsTotal,
+                    'applications_pending' => $applicationsPending,
+                    'applications_approved' => $applicationsApproved,
+                    'applications_rejected' => $applicationsRejected,
+                ],
+                'enrollment_trend' => $enrollmentTrend,
+                'applications_trend' => $applicationsTrend,
+                'applications_status' => $applicationsStatus,
+                'class_sizes' => $classSizes,
+                'activity' => [
+                    'students_30d' => $studentsLast30Days,
+                    'applications_30d' => $applicationsLast30Days,
+                ],
+                'last_updated' => $now->toDateTimeString(),
             ],
             'notices' => \App\Models\Notice::where('school_id', $school->id)->latest()->take(5)->get()
         ]);

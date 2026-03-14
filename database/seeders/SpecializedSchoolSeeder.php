@@ -21,6 +21,8 @@ class SpecializedSchoolSeeder extends Seeder
             'name' => 'The Door International Academy',
             'year_founded' => 2010,
             'school_type' => 'private',
+            'levels' => ['nursery', 'primary', 'secondary', 'senior'],
+            'faculties' => ['Science', 'Arts', 'Commercial'],
             'principal_name' => 'Dr. Alusine Kamara',
             'is_approved' => true,
         ]);

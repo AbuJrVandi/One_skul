@@ -4,6 +4,8 @@ import { useForm } from '@inertiajs/react';
 export default function PrincipalManagement({ school, principal }) {
     const [isResetting, setIsResetting] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
+        name: '',
+        email: '',
         password: '',
         password_confirmation: '',
     });
@@ -18,6 +20,15 @@ export default function PrincipalManagement({ school, principal }) {
         });
     };
 
+    const handleCreatePrincipal = (e) => {
+        e.preventDefault();
+        post(route('admin.portal.principal.create', school.id), {
+            onSuccess: () => {
+                reset();
+            },
+        });
+    };
+
     const toggleStatus = () => {
         if (confirm(`Are you sure you want to ${principal.is_active ? 'disable' : 'enable'} this account?`)) {
             post(route('admin.portal.principal.toggle-status', school.id));
@@ -26,14 +37,73 @@ export default function PrincipalManagement({ school, principal }) {
 
     if (!principal) {
         return (
-            <div className="bg-white p-8 rounded-3xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900">Create Principal Account</h3>
+                        <p className="text-sm text-gray-500">Set up login credentials for this school.</p>
+                    </div>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">No Principal Found</h3>
-                <p className="text-gray-500 mt-2">A principal account hasn't been created for this school yet.</p>
+
+                <form onSubmit={handleCreatePrincipal} className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label>
+                        <input
+                            type="text"
+                            value={data.name}
+                            onChange={(e) => setData('name', e.target.value)}
+                            className="w-full rounded-xl border-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Principal Name"
+                        />
+                        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email Address</label>
+                        <input
+                            type="email"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                            className="w-full rounded-xl border-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="principal@school.edu"
+                        />
+                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Password</label>
+                            <input
+                                type="password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                className="w-full rounded-xl border-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
+                            />
+                            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Confirm Password</label>
+                            <input
+                                type="password"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                className="w-full rounded-xl border-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
+                            />
+                        </div>
+                    </div>
+                    <div className="pt-2">
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all disabled:opacity-50"
+                        >
+                            {processing ? 'Creating...' : 'Create Principal Account'}
+                        </button>
+                    </div>
+                </form>
             </div>
         );
     }

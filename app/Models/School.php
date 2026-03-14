@@ -12,12 +12,16 @@ class School extends Model
         'name',
         'year_founded',
         'school_type',
+        'levels',
+        'faculties',
         'principal_name',
         'is_approved',
     ];
 
     protected $casts = [
         'is_approved' => 'boolean',
+        'levels' => 'array',
+        'faculties' => 'array',
     ];
 
     public function district()
@@ -82,5 +86,10 @@ class School extends Model
     public function reportAssets()
     {
         return $this->hasMany(SchoolReportAsset::class);
+    }
+
+    public function profilePhotos()
+    {
+        return $this->hasMany(SchoolProfilePhoto::class);
     }
 }
