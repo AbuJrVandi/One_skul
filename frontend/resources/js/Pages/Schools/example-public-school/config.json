@@ -1,0 +1,9 @@
+{
+    "slug": "example-public-school",
+    "brandName": "Example Public School",
+    "tagline": "Community First, Future Ready",
+    "portal": {
+        "portalLabel": "Enter Example Portal",
+        "applyLabel": "Apply to Example Public"
+    }
+}

@@ -1,0 +1,121 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use App\Modules\Subjects\Models\SchoolSubject;
+use Illuminate\Support\Str;
+
+class School extends Model
+{
+    protected $fillable = [
+        'district_id',
+        'name',
+        'slug',
+        'tenant_db_path',
+        'tenant_db_driver',
+        'year_founded',
+        'school_type',
+        'levels',
+        'faculties',
+        'landing_content',
+        'principal_name',
+        'is_approved',
+    ];
+
+    protected $casts = [
+        'is_approved' => 'boolean',
+        'levels' => 'array',
+        'faculties' => 'array',
+        'landing_content' => 'array',
+    ];
+
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class);
+    }
+
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    /**
+     * Get school-subject pivot records for this school
+     */
+    public function schoolSubjects()
+    {
+        return $this->hasMany(SchoolSubject::class);
+    }
+
+    /**
+     * Get enabled subjects for this school
+     */
+    public function enabledSubjects()
+    {
+        return Subject::active()
+            ->whereHas('schoolSubjects', function ($query) {
+                $query->where('school_id', $this->id)
+                      ->where('is_enabled', true);
+            })
+            ->orWhereDoesntHave('schoolSubjects', function ($query) {
+                $query->where('school_id', $this->id);
+            })
+            ->where('is_active', true);
+    }
+
+    public function classes()
+    {
+        return $this->hasMany(SchoolClass::class);
+    }
+
+    public function reportSettings()
+    {
+        return $this->hasOne(SchoolReportSetting::class);
+    }
+
+    public function reportAssets()
+    {
+        return $this->hasMany(SchoolReportAsset::class);
+    }
+
+    public function profilePhotos()
+    {
+        return $this->hasMany(SchoolProfilePhoto::class);
+    }
+
+    public static function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($name);
+        if ($base === '') {
+            $base = 'school';
+        }
+        $slug = $base;
+        $counter = 2;
+
+        while (static::where('slug', $slug)
+            ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+            ->exists()
+        ) {
+            $slug = $base . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
+}

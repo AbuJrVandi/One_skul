@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\TenantModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class SchoolClass extends TenantModel
+{
+    protected $fillable = ['school_id', 'name', 'level'];
+
+    public function school(): BelongsTo
+    {
+        return $this->belongsTo(School::class);
+    }
+
+    public function teachers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'class_teacher', 'school_class_id', 'user_id');
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    /**
+     * Get subjects assigned to this class
+     */
+    public function subjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Subject::class, 'class_subject');
+    }
+}

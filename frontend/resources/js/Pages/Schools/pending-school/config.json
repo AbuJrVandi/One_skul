@@ -1,0 +1,9 @@
+{
+    "slug": "pending-school",
+    "brandName": "Pending School",
+    "tagline": "Awaiting Approval",
+    "portal": {
+        "portalLabel": "Enter Pending Portal",
+        "applyLabel": "Apply to Pending School"
+    }
+}
