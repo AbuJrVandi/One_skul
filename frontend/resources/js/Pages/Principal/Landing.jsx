@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -27,6 +27,7 @@ export default function Landing({ auth, school, landing, photos = [] }) {
     const galleryForm = useForm({
         photo: null,
     });
+    const [galleryPreviewUrl, setGalleryPreviewUrl] = useState(null);
 
     const highlights = useMemo(
         () => (Array.isArray(data.highlights) ? data.highlights : []),
@@ -41,7 +42,7 @@ export default function Landing({ auth, school, landing, photos = [] }) {
     };
 
     const submitHeroImage = (e) => {
-        e.preventDefault();
+        e?.preventDefault?.();
         if (!heroImageForm.data.photo) return;
         heroImageForm.post(route('principal.landing.images.store', { slot: 'hero' }), {
             forceFormData: true,
@@ -51,7 +52,7 @@ export default function Landing({ auth, school, landing, photos = [] }) {
     };
 
     const submitAboutImage = (e) => {
-        e.preventDefault();
+        e?.preventDefault?.();
         if (!aboutImageForm.data.photo) return;
         aboutImageForm.post(route('principal.landing.images.store', { slot: 'about' }), {
             forceFormData: true,
@@ -69,7 +70,7 @@ export default function Landing({ auth, school, landing, photos = [] }) {
     };
 
     const submitGalleryPhoto = (e) => {
-        e.preventDefault();
+        e?.preventDefault?.();
         if (!galleryForm.data.photo) return;
         galleryForm.post(route('principal.school-profile.photos.store'), {
             forceFormData: true,
@@ -83,6 +84,23 @@ export default function Landing({ auth, school, landing, photos = [] }) {
             router.delete(route('principal.school-profile.photos.destroy', photoId), { preserveScroll: true });
         }
     };
+
+    const handleGalleryPhotoChange = (e) => {
+        const file = e.target.files?.[0] ?? null;
+        galleryForm.setData('photo', file);
+        if (galleryPreviewUrl) {
+            URL.revokeObjectURL(galleryPreviewUrl);
+        }
+        setGalleryPreviewUrl(file ? URL.createObjectURL(file) : null);
+    };
+
+    useEffect(() => {
+        return () => {
+            if (galleryPreviewUrl) {
+                URL.revokeObjectURL(galleryPreviewUrl);
+            }
+        };
+    }, [galleryPreviewUrl]);
 
     const updateHighlight = (index, value) => {
         const next = [...highlights];
@@ -167,20 +185,20 @@ export default function Landing({ auth, school, landing, photos = [] }) {
                                 ) : (
                                     <p className="text-xs text-gray-400">No hero image uploaded yet.</p>
                                 )}
-                                <form onSubmit={submitHeroImage} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                                     <input
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => heroImageForm.setData('photo', e.target.files?.[0] ?? null)}
                                         className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-semibold hover:file:bg-indigo-100"
                                     />
-                                    <SecondaryButton type="submit" disabled={heroImageForm.processing}>
+                                    <SecondaryButton type="button" onClick={submitHeroImage} disabled={heroImageForm.processing || !heroImageForm.data.photo}>
                                         {heroImageForm.processing ? 'Uploading...' : 'Upload Hero Image'}
                                     </SecondaryButton>
                                     {heroImageForm.errors.photo && (
                                         <InputError message={heroImageForm.errors.photo} className="mt-2 sm:mt-0" />
                                     )}
-                                </form>
+                                </div>
                             </div>
                         </div>
 
@@ -231,20 +249,20 @@ export default function Landing({ auth, school, landing, photos = [] }) {
                                 ) : (
                                     <p className="text-xs text-gray-400">No about image uploaded yet.</p>
                                 )}
-                                <form onSubmit={submitAboutImage} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                                     <input
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => aboutImageForm.setData('photo', e.target.files?.[0] ?? null)}
                                         className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-semibold hover:file:bg-indigo-100"
                                     />
-                                    <SecondaryButton type="submit" disabled={aboutImageForm.processing}>
+                                    <SecondaryButton type="button" onClick={submitAboutImage} disabled={aboutImageForm.processing || !aboutImageForm.data.photo}>
                                         {aboutImageForm.processing ? 'Uploading...' : 'Upload About Image'}
                                     </SecondaryButton>
                                     {aboutImageForm.errors.photo && (
                                         <InputError message={aboutImageForm.errors.photo} className="mt-2 sm:mt-0" />
                                     )}
-                                </form>
+                                </div>
                             </div>
                         </div>
 
@@ -318,10 +336,18 @@ export default function Landing({ auth, school, landing, photos = [] }) {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {Array.from({ length: 4 }).map((_, index) => {
                                     const photo = photos[index];
+                                    const isPreviewSlot = !photo && galleryPreviewUrl && index === photos.length;
                                     return (
                                         <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
                                             {photo ? (
                                                 <img src={photo.url} alt="School compound" className="h-full w-full object-cover" />
+                                            ) : isPreviewSlot ? (
+                                                <>
+                                                    <img src={galleryPreviewUrl} alt="Selected preview" className="h-full w-full object-cover opacity-80" />
+                                                    <div className="absolute inset-0 flex items-center justify-center text-xs font-bold uppercase tracking-widest text-white bg-black/40">
+                                                        {galleryForm.processing ? 'Uploading...' : 'Preview'}
+                                                    </div>
+                                                </>
                                             ) : (
                                                 <div className="h-full w-full flex items-center justify-center text-gray-300 text-xs uppercase tracking-widest font-bold">
                                                     Empty Slot
@@ -341,21 +367,21 @@ export default function Landing({ auth, school, landing, photos = [] }) {
                                 })}
                             </div>
 
-                            <form onSubmit={submitGalleryPhoto} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => galleryForm.setData('photo', e.target.files?.[0] ?? null)}
+                                    onChange={handleGalleryPhotoChange}
                                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-semibold hover:file:bg-indigo-100"
                                     disabled={photos.length >= 4}
                                 />
-                                <SecondaryButton type="submit" disabled={galleryForm.processing || photos.length >= 4}>
+                                <SecondaryButton type="button" onClick={submitGalleryPhoto} disabled={galleryForm.processing || photos.length >= 4 || !galleryForm.data.photo}>
                                     {galleryForm.processing ? 'Uploading...' : 'Upload Photo'}
                                 </SecondaryButton>
                                 {galleryForm.errors.photo && (
                                     <InputError message={galleryForm.errors.photo} className="mt-2 sm:mt-0" />
                                 )}
-                            </form>
+                            </div>
                         </div>
 
                         <div className="flex items-center justify-end gap-3">
