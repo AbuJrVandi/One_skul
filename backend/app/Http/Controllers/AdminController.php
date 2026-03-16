@@ -15,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 
 class AdminController extends Controller
 {
@@ -346,9 +347,24 @@ class AdminController extends Controller
 
     public function toggleApproval(School $school)
     {
+        $approve = !$school->is_approved;
+
         $school->update([
-            'is_approved' => !$school->is_approved
+            'is_approved' => $approve
         ]);
+
+        if ($approve) {
+            try {
+                Artisan::call('school:provision', [
+                    'school' => $school->id,
+                ]);
+            } catch (\Throwable $e) {
+                report($e);
+                return redirect()->back()->withErrors([
+                    'approval' => 'School approved, but provisioning failed. Please run: php artisan school:provision ' . ($school->slug ?? $school->id),
+                ]);
+            }
+        }
 
         return redirect()->back()->with('success', 'School approval status updated.');
     }

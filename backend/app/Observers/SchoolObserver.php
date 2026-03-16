@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\School;
 use App\Models\Subject;
 use App\Modules\Subjects\Models\SchoolSubject;
+use App\Services\TenantManager;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -25,18 +26,27 @@ class SchoolObserver
             $school->saveQuietly();
         }
 
-        // Auto-assign all active subjects to the new school
+        $this->ensureFrontendSchoolConfig($school);
+
+        // Auto-assign subjects only when tenant connection is resolved
+        // (avoid failing on central DB operations)
+        if (!app(TenantManager::class)->isResolved()) {
+            return;
+        }
+
         $activeSubjects = Subject::where('is_active', true)->get();
 
         foreach ($activeSubjects as $subject) {
-            SchoolSubject::create([
-                'school_id' => $school->id,
-                'subject_id' => $subject->id,
-                'is_enabled' => true,
-            ]);
+            SchoolSubject::updateOrCreate(
+                [
+                    'school_id' => $school->id,
+                    'subject_id' => $subject->id,
+                ],
+                [
+                    'is_enabled' => true,
+                ]
+            );
         }
-
-        $this->ensureFrontendSchoolConfig($school);
     }
 
     /**
